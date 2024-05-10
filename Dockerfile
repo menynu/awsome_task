@@ -2,9 +2,8 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the Python script from GitHub into the Docker image
+COPY main.py .
 
-COPY app .
-
+# Run the Python script
 CMD ["python", "main.py"]
