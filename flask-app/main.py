@@ -1,35 +1,27 @@
-import docker
 from flask import Flask, jsonify
-import logging
+import docker
 
 app = Flask(__name__)
-
-# Setup basic logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 @app.route('/')
 def list_containers():
     try:
-        client = docker.from_env()
+        # Explicitly setting the Docker client to use the Unix socket
+        client = docker.DockerClient(base_url='unix://var/run/docker.sock')
         containers = client.containers.list()
-
+        
         container_list = []
         for container in containers:
             container_info = {
                 "Container ID": container.id,
-                "Image": container.image.tags[0] if container.image.tags else "No tags",
+                "Image": container.image.tags[0] if container.image.tags else "No image tags",
                 "Status": container.status
             }
             container_list.append(container_info)
-            logging.info(f"Processed container: {container.id}")
 
         return jsonify(container_list)
-    except docker.errors.DockerException as e:
-        logging.error(f"Docker error: {str(e)}")
-        return jsonify({"error": "Docker error", "details": str(e)}), 500
     except Exception as e:
-        logging.error(f"General error: {str(e)}")
-        return jsonify({"error": "General error", "details": str(e)}), 500
+        return jsonify({"error": "Failed to connect to Docker daemon", "details": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
