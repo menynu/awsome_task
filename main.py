@@ -1,15 +1,20 @@
+import docker
 from flask import Flask
 
-import docker
-
 app = Flask(__name__)
-client = docker.from_env()
 
 @app.route('/')
 def list_containers():
+    client = docker.from_env()
     containers = client.containers.list()
-    container_info = [(container.name, container.short_id) for container in containers]
-    return '\n'.join([f'{name}: {id}' for name, id in container_info])
+    
+    container_list = ""
+    for container in containers:
+        container_list += f"Container ID: {container.id}\n"
+        container_list += f"Image: {container.image.tags[0]}\n"
+        container_list += f"Status: {container.status}\n\n"
+    
+    return container_list
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run()
