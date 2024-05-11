@@ -1,6 +1,6 @@
 def repoUrl = 'https://github.com/menynu/awsome_task.git'
 def imageName = 'meny205/flask-docker-list'
-def dockerHubCredentialsId = 'dockerhub-cred' // This should match the ID of your Docker Hub credentials in Jenkins
+def dockerHubCredentialsId = 'dockerhub-cred' 
 
 pipelineJob('Build-and-Push-Flask-Docker-List-App') {
     definition {
@@ -21,7 +21,7 @@ pipelineJob('Build-and-Push-Flask-Docker-List-App') {
                         stage('Build Docker Image') {
                             steps {
                                 script {
-                                    def customImage = docker.build("\$DOCKER_IMAGE")
+                                    sh 'docker build --no-cache -t \$DOCKER_IMAGE .'
                                 }
                             }
                         }
@@ -37,13 +37,13 @@ pipelineJob('Build-and-Push-Flask-Docker-List-App') {
                         stage('Run Docker Container') {
                             steps {
                                 script {
-                                    sh "docker run -d -p 5000:5000 -v /var/run/docker.sock:/var/run/docker.sock \$DOCKER_IMAGE"
+                                    sh 'docker run -d --name flask_container -p 5000:5000 -v /var/run/docker.sock:/var/run/docker.sock \$DOCKER_IMAGE'
                                 }
                             }
                         }
                     }
                 }
-            """.stripIndent()) // Using stripIndent() instead of trimIndent()
+            """.stripIndent())
             sandbox(true)
         }
     }
