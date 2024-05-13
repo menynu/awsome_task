@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp  # Labels used to identify the pods this deployment manages
+  template:
+    metadata:
+      labels:
+        app: myapp  # Labels assigned to the pods created by this deployment
+    spec:
+      containers:
+      - name: flask-app
+        image: meny205/flask-app-image  # Ensure this is the correct Flask app image
+        ports:
+        - containerPort: 5000  # Flask app listens on port 5000
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock  # Mount the Docker socket for Docker operations
+      - name: nginx
+        image: meny205/nginx-modified-image  # Ensure this is the correct NGINX image
+        ports:
+        - containerPort: 8081  # NGINX listens on port 8080
+      volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock  # Host path for Docker socket
+          type: Socket
+      imagePullSecrets:
+      - name: regcred  # Secret for pulling images from a private Docker registry
