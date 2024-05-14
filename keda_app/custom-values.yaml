@@ -1,0 +1,7 @@
+prometheus:
+  server:
+    fullnameOverride: "prometheus-server"
+    extraScrapeConfigs: |
+      - job_name: 'flask-app'
+        static_configs:
+          - targets: ['flask-app-service.default.svc.cluster.local:5000']

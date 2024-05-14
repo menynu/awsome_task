@@ -24,7 +24,7 @@ spec:
       - name: nginx
         image: meny205/nginx-modified-image  # Ensure this is the correct NGINX image
         ports:
-        - containerPort: 8081  # NGINX listens on port 8080
+        - containerPort: 8080  # NGINX listens on port 8080
       volumes:
       - name: docker-socket
         hostPath:

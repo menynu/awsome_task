@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: flask-app-scaledobject
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: myapp-deployment
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  pollingInterval: 10  # How often KEDA will check the metrics in seconds
+  cooldownPeriod: 30  # The period to wait after the last trigger reported active before scaling down
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        metricName: app_containers
+        threshold: '5'  # Scale up when the average number of containers over the last 2 minutes is more than 5
+        query: |
+          sum(rate(app_containers[2m]))
