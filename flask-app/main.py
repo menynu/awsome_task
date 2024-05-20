@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import docker
 
 app = Flask(__name__)
@@ -6,6 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 def list_containers():
     try:
+        print(request.headers)
         # Explicitly setting the Docker client to use the Unix socket
         client = docker.DockerClient(base_url='unix://var/run/docker.sock')
         containers = client.containers.list()
